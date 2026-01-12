@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion | Console de Gestion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], heading: ['"Outfit"', 'sans-serif'], mono: ['"Fira Code"', 'monospace'] },
+                    colors: { brand: { bg: '#05060A', surface: '#0E1016', primary: '#5865F2', accent: '#F47FFF', secondary: '#4ADE80' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #05060A; background-image: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #05060A 80%); }
+        .glass-sidebar { background: rgba(10, 11, 16, 0.6); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0.03); }
+        .config-card { background: rgba(18, 20, 28, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.3s; }
+        .config-card:hover { border-color: #5865F2; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e212b; transition: .4s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.05); }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #5865F2; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .active-tab { background: rgba(88, 101, 242, 0.1) !important; color: #5865F2 !important; border-left: 3px solid #5865F2 !important; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235865F2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1E212B; border-radius: 4px; }
+        .input-modern, .select-modern { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; color: white; font-size: 13px; outline: none; transition: 0.2s; }
+        .input-modern:focus { border-color: #5865F2; }
+        .discord-embed { background: rgba(18, 20, 28, 0.6); border: 1px solid rgba(255,255,255,0.05); color: #ffffff; }
+        .discord-embed strong { color: white; display: block; margin-bottom: 4px; }
+        .discord-embed p { color: #dcddde; font-size: 13px; }
+        .discord-embed img { max-width: 100%; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-white font-sans antialiased h-screen flex flex-col overflow-hidden">
+
+    <header class="h-20 border-b border-white/5 flex items-center px-4 lg:px-8 justify-between bg-brand-bg/50 backdrop-blur-md z-30 flex-shrink-0">
+        <div class="flex items-center gap-4 lg:gap-6 w-full">
+            <a href="dashboard.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all flex-shrink-0"><i class="fa-solid fa-arrow-left text-gray-400"></i></a>
+            
+            <div class="flex flex-col lg:flex-row lg:items-center gap-1 lg:gap-4 overflow-hidden">
+                <div class="hidden lg:block w-10 h-10 rounded-xl bg-brand-primary/20 animate-pulse border border-white/5"></div>
+                <div>
+                    <h2 class="font-heading font-bold text-sm lg:text-lg uppercase tracking-tighter truncate" id="guild-name">Chargement...</h2>
+                    <p class="hidden lg:block text-[10px] text-brand-primary font-black uppercase tracking-[2px]">Panel Web V1.3</p>
+                </div>
+            </div>
+
+            <select onchange="switchTab(this.value)" class="lg:hidden ml-auto bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-bold rounded-lg p-2 outline-none w-40">
+                <option value="analytics">Vue d'ensemble</option>
+                <option value="security">Modules & Sécurité</option>
+                <option value="logs">Logs</option>
+                <option value="tickets">Tickets</option>
+                <option value="embed">Embed</option>
+                <option value="members">Staff & WL</option>
+            </select>
+        </div>
+
+        <button onclick="saveAllConfigs()" id="save-btn" class="hidden lg:flex ml-4 px-8 py-3 bg-brand-primary hover:bg-indigo-500 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-brand-primary/20 items-center gap-3 whitespace-nowrap"><i class="fa-solid fa-floppy-disk"></i> Sauvegarder</button>
+        <button onclick="saveAllConfigs()" class="lg:hidden ml-2 w-12 h-10 bg-brand-primary rounded-xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-floppy-disk"></i></button>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-72 glass-sidebar flex-shrink-0 hidden lg:flex flex-col p-6 overflow-y-auto custom-scroll">
+            <nav class="space-y-1.5">
+                <button onclick="switchTab('analytics')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link active-tab"><i class="fa-solid fa-chart-line w-5"></i> Vue d'ensemble</button>
+                <button onclick="switchTab('security')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-shield-halved w-5"></i> Modules & Sécurité</button>
+                <button onclick="switchTab('logs')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-list-check w-5"></i> Télémétrie (Logs)</button>
+                <button onclick="switchTab('tickets')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-ticket w-5"></i> Tickets</button>
+                <button onclick="switchTab('embed')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-pen-nib w-5"></i> Embed Builder</button>
+                <button onclick="switchTab('members')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-users-gear w-5"></i> Staff & WL</button>
+                <button onclick="switchTab('backups')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-database w-5"></i> Backups</button>
+                <button onclick="switchTab('settings')" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold sidebar-link"><i class="fa-solid fa-gear w-5"></i> Paramètres</button>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-4 lg:p-16 custom-scroll relative bg-black/20 pb-24 lg:pb-16">
+            
+            <div id="content-analytics" class="tab-content max-w-5xl mx-auto space-y-10">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter">Données <span class="text-brand-primary">Live</span></h1>
+                <div class="config-card p-4 lg:p-8">
+                    <canvas id="growthChart" height="150"></canvas>
+                </div>
+            </div>
+
+            <div id="content-security" class="tab-content hidden max-w-5xl mx-auto space-y-8 pb-20">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter text-indigo-500">Modules & Sentry</h1>
+                    <div class="flex gap-2">
+                        <button onclick="toggleAllSecurity(true)" class="px-4 py-2 bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white rounded-xl text-xs font-bold uppercase transition-all">Tout Activer</button>
+                        <button onclick="toggleAllSecurity(false)" class="px-4 py-2 bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold uppercase transition-all">Tout Désactiver</button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="config-card p-6 border-l-4 border-brand-primary bg-brand-primary/5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold">Système de Niveaux 🏆</h4>
+                            <label class="switch"><input type="checkbox" id="level_system_enabled"><span class="slider"></span></label>
+                        </div>
+                        <p class="text-xs text-gray-500">Gagnez de l'XP en parlant et en vocal. Désactivez pour stopper le gain d'XP.</p>
+                    </div>
+
+                    <div class="config-card p-6 border-l-4 border-red-500">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold">Anti-Raid</h4>
+                            <label class="switch"><input type="checkbox" id="antiraid_enabled"><span class="slider"></span></label>
+                        </div>
+                        <div class="space-y-3">
+                            <div><label class="text-[10px] text-gray-500 font-black italic">LIMITE JOINS / MIN</label><input type="number" id="raid_threshold" class="input-modern" value="10"></div>
+                            <div><label class="text-[10px] text-gray-500 font-black italic">ACTION</label><select id="raid_action" class="select-modern"><option value="kick">Expulser (Kick)</option><option value="ban">Bannir (Ban)</option></select></div>
+                        </div>
+                    </div>
+
+                    <div class="config-card p-6 border-l-4 border-yellow-500">
+                        <div class="flex justify-between items-center mb-4"><h4 class="font-bold">Anti-Spam</h4><label class="switch"><input type="checkbox" id="antispam_enabled"><span class="slider"></span></label></div>
+                        <div class="space-y-3"><div><input type="number" id="spam_threshold" class="input-modern" value="5"></div><div><select id="spam_action" class="select-modern"><option value="warn">Avertir (Warn)</option><option value="timeout">Rendre muet (Timeout)</option></select></div></div>
+                    </div>
+
+                    <div class="config-card p-6"><div class="flex justify-between items-center mb-4"><h4 class="font-bold">Anti-Token</h4><label class="switch"><input type="checkbox" id="antitoken_enabled"><span class="slider"></span></label></div><div><label class="text-[10px] text-gray-500 font-black italic">ÂGE MINIMUM (Heures)</label><input type="number" id="token_min_age" class="input-modern" value="24"></div></div>
+
+                    <div class="config-card p-6"><div class="flex justify-between items-center mb-4"><h4 class="font-bold">Anti-Mass Ban</h4><label class="switch"><input type="checkbox" id="antimassban_enabled"><span class="slider"></span></label></div><div><label class="text-[10px] text-gray-500 font-black italic">LIMITE (Bans/10s)</label><input type="number" id="limit_mass_ban" class="input-modern" value="3"></div></div>
+
+                    <div class="config-card p-6">
+                        <div class="flex flex-col gap-2 mb-4"><div class="flex justify-between items-center"><h4 class="font-bold text-sm">Anti-Role Create</h4><label class="switch"><input type="checkbox" id="antirole_create_enabled"><span class="slider"></span></label></div><div class="flex justify-between items-center"><h4 class="font-bold text-sm">Anti-Role Delete</h4><label class="switch"><input type="checkbox" id="antirole_delete_enabled"><span class="slider"></span></label></div></div>
+                        <div class="grid grid-cols-2 gap-2"><div><input type="number" id="limit_role_create" class="input-modern" value="1"></div><div><select id="nuke_action" class="select-modern"><option value="derank">Derank</option><option value="ban">Ban</option></select></div></div>
+                    </div>
+
+                    <div class="config-card p-6">
+                         <div class="flex flex-col gap-2 mb-4"><div class="flex justify-between items-center"><h4 class="font-bold text-sm">Anti-Channel Create</h4><label class="switch"><input type="checkbox" id="antichannel_create_enabled"><span class="slider"></span></label></div><div class="flex justify-between items-center"><h4 class="font-bold text-sm">Anti-Channel Delete</h4><label class="switch"><input type="checkbox" id="antichannel_delete_enabled"><span class="slider"></span></label></div></div>
+                         <div class="grid grid-cols-2 gap-2"><div><input type="number" id="limit_channel_create" class="input-modern" value="1"></div><div><select id="channel_action" class="select-modern"><option value="derank">Derank</option><option value="ban">Ban</option></select></div></div>
+                    </div>
+                    
+                     <div class="config-card p-6">
+                        <div class="flex justify-between items-center mb-4"><h4 class="font-bold">Anti-Webhook</h4><label class="switch"><input type="checkbox" id="antiwebhook_enabled"><span class="slider"></span></label></div>
+                        <div class="grid grid-cols-2 gap-2"><div><input type="number" id="limit_webhook" class="input-modern" value="1"></div><div><select id="webhook_action" class="select-modern"><option value="ban">Ban</option><option value="derank">Derank</option></select></div></div>
+                    </div>
+
+                    <div class="config-card p-6">
+                        <div class="flex justify-between items-center mb-4"><h4 class="font-bold">Anti-Lien</h4><label class="switch"><input type="checkbox" id="antilink_enabled"><span class="slider"></span></label></div>
+                        <div class="flex justify-between items-center"><h4 class="font-bold">Anti-Bot</h4><label class="switch"><input type="checkbox" id="antibot_enabled"><span class="slider"></span></label></div>
+                    </div>
+
+                    <div class="config-card p-6">
+                        <div class="flex justify-between items-center mb-4"><h4 class="font-bold">Anti-Mass Mention</h4><label class="switch"><input type="checkbox" id="antighostping_enabled"><span class="slider"></span></label></div>
+                        <div class="grid grid-cols-2 gap-2"><input type="number" id="massmention_threshold" class="input-modern" value="5"><select id="mentions_action" class="select-modern"><option value="ban">Ban</option><option value="kick">Kick</option></select></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-logs" class="tab-content hidden max-w-5xl mx-auto space-y-8 pb-20">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter text-indigo-400">Canaux Logs</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Protection 🚨</label><select id="logs_protection" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Modération 🛡️</label><select id="logs_moderation" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Messages 💬</label><select id="logs_messages" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Vocal 🔊</label><select id="logs_voice" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Traffic 🚦</label><select id="logs_traffic" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Invitations 📨</label><select id="logs_invites" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Serveur 🏠</label><select id="logs_server" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Audit 🕵️</label><select id="logs_audit" class="sel-channel select-modern"></select></div>
+                    <div class="config-card"><label class="text-[9px] font-bold text-gray-500 uppercase block mb-1">Tickets 🎫</label><select id="logs_tickets" class="sel-channel select-modern"></select></div>
+                </div>
+            </div>
+
+            <div id="content-tickets" class="tab-content hidden max-w-5xl mx-auto space-y-8 pb-20">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter text-blue-400">Tickets Alpha V5</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="config-card space-y-4">
+                        <h3 class="font-bold italic border-b border-white/5 pb-2">Système</h3>
+                        <label class="text-[9px] text-gray-500 font-black">TYPE</label><select id="ticket_system_type" class="select-modern"><option value="BUTTON">Bouton Unique</option><option value="MENU">Menu Déroulant</option></select>
+                        <label class="text-[9px] text-gray-500 font-black">CATÉGORIE</label><select id="ticket_category" class="select-category select-modern"></select>
+                        <label class="text-[9px] text-gray-500 font-black">RÔLE STAFF</label><select id="ticket_role" class="select-role select-modern"></select>
+                        <div class="flex items-center justify-between mt-4"><span>Transcripts par DM</span><label class="switch"><input type="checkbox" id="ticket_dm_transcript"><span class="slider"></span></label></div>
+                    </div>
+                    <div class="config-card space-y-4 flex flex-col">
+                        <h3 class="font-bold italic border-b border-white/5 pb-2">Options</h3>
+                        <div id="ticket-options-list" class="space-y-2 flex-1 overflow-y-auto max-h-60 custom-scroll"></div>
+                        <button onclick="addTicketOption()" class="w-full py-2 bg-blue-600/20 text-blue-400 rounded-lg text-[10px] font-black uppercase">+ Ajouter une option</button>
+                    </div>
+                </div>
+                <div class="config-card space-y-6">
+                    <h3 class="font-bold italic border-b border-white/5 pb-2">Apparence</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="text" id="ticket_msg_title" placeholder="Titre Panel" class="input-modern"><textarea id="ticket_msg_desc" placeholder="Desc" rows="1" class="input-modern"></textarea></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4"><input type="text" id="ticket_btn_label" placeholder="Texte Bouton" class="input-modern"><input type="text" id="ticket_btn_emoji" placeholder="Emoji" class="input-modern"><select id="ticket_btn_style" class="select-modern"><option value="Primary">Bleu</option><option value="Success">Vert</option><option value="Danger">Rouge</option></select></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="text" id="ticket_panel_image" placeholder="Image URL" class="input-modern"><input type="text" id="ticket_panel_footer" placeholder="Footer" class="input-modern"></div>
+                    <button onclick="deployTicket()" class="w-full py-4 bg-blue-600 rounded-2xl font-black uppercase tracking-[3px] hover:scale-[1.01] transition-all shadow-2xl shadow-blue-600/20">🚀 PUBLIER LE PANEL</button>
+                </div>
+                <div class="config-card space-y-6">
+                    <h3 class="font-bold italic border-b border-white/5 pb-2">Bienvenue</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="text" id="ticket_welcome_title" placeholder="Titre Bienvenue" class="input-modern"><textarea id="ticket_welcome_desc" placeholder="Message..." rows="1" class="input-modern"></textarea></div>
+                </div>
+            </div>
+
+            <div id="content-embed" class="tab-content hidden max-w-6xl mx-auto space-y-8 pb-20">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter">Embed Studio <span class="text-brand-primary">Pro</span></h1>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Éditeur -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="config-card p-6 space-y-4">
+                            <h3 class="font-bold text-lg border-b border-brand-primary pb-2">Contenu Principal</h3>
+                            <input type="text" id="emb-title" oninput="updateEmbed()" placeholder="Titre (max 256)" maxlength="256" class="input-modern">
+                            <textarea id="emb-desc" oninput="updateEmbed()" placeholder="Description (max 4096)" maxlength="4096" rows="5" class="input-modern"></textarea>
+                            <input type="text" id="emb-footer" oninput="updateEmbed()" placeholder="Texte du footer" class="input-modern">
+                        </div>
+
+                        <div class="config-card p-6 space-y-4">
+                            <h3 class="font-bold text-lg border-b border-brand-primary pb-2">Médias & Couleur</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] text-gray-500 font-black mb-2 block">COULEUR</label>
+                                    <input type="color" id="emb-color" oninput="updateEmbed()" value="#5865F2" class="w-full h-12 bg-transparent border border-white/10 rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-gray-500 font-black mb-2 block">DESTINATAIRE</label>
+                                    <select id="emb-channel" class="sel-channel select-modern"></select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-500 font-black mb-2 block">IMAGE PRINCIPALE (URL)</label>
+                                <input type="text" id="emb-image" oninput="updateEmbed()" placeholder="https://..." class="input-modern">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-500 font-black mb-2 block">THUMBNAIL (URL)</label>
+                                <input type="text" id="emb-thumb" oninput="updateEmbed()" placeholder="https://..." class="input-modern">
+                            </div>
+                        </div>
+
+                        <div class="config-card p-6 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-lg">Fields (Champs)</h3>
+                                <button onclick="addField()" class="px-4 py-2 bg-brand-primary/20 text-brand-primary rounded-lg text-xs font-bold uppercase hover:bg-brand-primary/30 transition">+ Ajouter</button>
+                            </div>
+                            <div id="fields-container" class="space-y-3"></div>
+                        </div>
+
+                        <button onclick="sendEmbed()" class="w-full py-4 bg-brand-primary rounded-xl font-black text-lg uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-brand-primary/20">🚀 ENVOYER L'EMBED</button>
+                    </div>
+
+                    <!-- Prévisualisation Discord -->
+                    <div>
+                        <div class="sticky top-4">
+                            <h3 class="font-bold text-lg mb-4">Aperçu</h3>
+                            <div class="discord-embed bg-brand-surface rounded-xl p-4 border-l-4 border-brand-primary">
+                                <div id="prev-container" class="space-y-2">
+                                    <div id="prev-title" class="font-bold text-white text-lg"></div>
+                                    <div id="prev-desc" class="text-sm text-gray-300 whitespace-pre-wrap"></div>
+                                    <img id="prev-image" class="w-full rounded mt-3 hidden max-h-64 object-cover">
+                                    <div id="prev-fields" class="space-y-2 text-xs mt-3"></div>
+                                    <div id="prev-footer" class="text-xs text-gray-500 italic mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-members" class="tab-content hidden max-w-5xl mx-auto space-y-8">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter">Staff & Whitelist</h1>
+                <p class="text-gray-400 text-sm">Affichage uniquement des membres disposant de privilèges (Administrateurs, Whitelistés, Owner).</p>
+                <div class="config-card overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-white/5 text-[10px] uppercase font-black text-gray-500">
+                            <tr>
+                                <th class="p-6">Utilisateur</th>
+                                <th class="p-6">ID</th>
+                                <th class="p-6">Statut</th>
+                                <th class="p-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="members-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="content-backups" class="tab-content hidden max-w-5xl mx-auto space-y-8 pb-20">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter text-green-400">Gestionnaire de Backups</h1>
+                
+                <div class="config-card p-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg">Créer une Sauvegarde</h3>
+                            <p class="text-xs text-gray-500 mt-1">Sauvegarde complète du serveur (rôles, salons, permissions)</p>
+                        </div>
+                        <button onclick="createBackup()" class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-bold uppercase text-sm transition-all shadow-lg">
+                            <i class="fa-solid fa-plus"></i> Nouvelle Backup
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Historique des Backups</h3>
+                    <div id="backups-list" class="space-y-3">
+                        <div class="config-card p-6 text-center text-gray-500">Chargement...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-settings" class="tab-content hidden max-w-5xl mx-auto space-y-8 pb-20">
+                <h1 class="text-2xl lg:text-4xl font-heading font-black uppercase italic tracking-tighter text-purple-400">Paramètres Avancés</h1>
+                
+                <div class="config-card p-6 space-y-6">
+                    <h3 class="font-bold text-lg border-b border-white/5 pb-2">Apparence</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Thème Sombre</p>
+                                <p class="text-xs text-gray-500">Interface en mode sombre</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="theme_dark" checked><span class="slider"></span></label>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Animations</p>
+                                <p class="text-xs text-gray-500">Activer les animations</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="animations_enabled" checked><span class="slider"></span></label>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-500 font-black mb-2 block">LANGUE</label>
+                            <select id="language" class="select-modern">
+                                <option value="fr">Français</option>
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                                <option value="de">Deutsch</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-card p-6 space-y-6">
+                    <h3 class="font-bold text-lg border-b border-white/5 pb-2">Notifications</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Notifications Modération</p>
+                                <p class="text-xs text-gray-500">Alertes pour bans/kicks/warns</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="notif_moderation" checked><span class="slider"></span></label>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Notifications Tickets</p>
+                                <p class="text-xs text-gray-500">Nouveaux tickets</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="notif_tickets" checked><span class="slider"></span></label>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Notifications Invitations</p>
+                                <p class="text-xs text-gray-500">Nouveaux membres</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="notif_invites" checked><span class="slider"></span></label>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-500 font-black mb-2 block">CANAL NOTIFICATIONS</label>
+                            <select id="notif_channel" class="sel-channel select-modern"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-card p-6 space-y-6">
+                    <h3 class="font-bold text-lg border-b border-white/5 pb-2">Performance</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Cache Actif</p>
+                                <p class="text-xs text-gray-500">Mettre en cache les requêtes</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="cache_enabled" checked><span class="slider"></span></label>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-500 font-black mb-2 block">DURÉE CACHE (secondes)</label>
+                            <input type="number" id="cache_duration" class="input-modern" value="3600" min="60" max="86400">
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Logs Compressés</p>
+                                <p class="text-xs text-gray-500">Réduire la taille des logs</p>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="logs_compressed"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="saveAllConfigs()" class="w-full py-4 bg-brand-primary rounded-xl font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-brand-primary/20">💾 Sauvegarder les paramètres</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const guildId = urlParams.get('guild_id');
+        let ticketOptions = [];
+        let embedFields = [];
+
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-link').forEach(e => e.classList.remove('active-tab'));
+            const content = document.getElementById('content-' + t);
+            if(content) content.classList.remove('hidden');
+        }
+
+        // EMBED BUILDER AMÉLIORÉ
+        function updateEmbed() {
+            const title = document.getElementById('emb-title').value || 'Sans titre';
+            const desc = document.getElementById('emb-desc').value || '';
+            const footer = document.getElementById('emb-footer').value || '';
+            const color = document.getElementById('emb-color').value;
+            const image = document.getElementById('emb-image').value;
+            const thumb = document.getElementById('emb-thumb').value;
+
+            // Mise à jour prévisualisation
+            document.getElementById('prev-title').textContent = title;
+            document.getElementById('prev-desc').textContent = desc;
+            document.getElementById('prev-footer').textContent = footer;
+            
+            const imgEl = document.getElementById('prev-image');
+            if(image) { imgEl.src = image; imgEl.classList.remove('hidden'); } 
+            else { imgEl.classList.add('hidden'); }
+
+            const fieldsDiv = document.getElementById('prev-fields');
+            fieldsDiv.innerHTML = embedFields.map(f => 
+                `<div><strong>${f.name}</strong><p class="text-gray-400">${f.value}</p></div>`
+            ).join('');
+
+            // Couleur border
+            document.querySelector('.discord-embed').style.borderLeftColor = color;
+        }
+
+        function addField() {
+            const name = prompt("Nom du field (max 256) :");
+            if(!name) return;
+            const value = prompt("Valeur (max 1024) :");
+            if(!value) return;
+            embedFields.push({ name: name.substring(0,256), value: value.substring(0,1024), inline: false });
+            renderFields();
+            updateEmbed();
+        }
+
+        function renderFields() {
+            const cont = document.getElementById('fields-container');
+            cont.innerHTML = embedFields.map((f, idx) => `
+                <div class="flex gap-2 items-start bg-black/20 p-3 rounded-lg">
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-500 font-bold">CHAMP ${idx+1}</p>
+                        <p class="font-bold text-white">${f.name}</p>
+                        <p class="text-xs text-gray-400 line-clamp-2">${f.value}</p>
+                    </div>
+                    <button onclick="embedFields.splice(${idx},1);renderFields();updateEmbed()" class="p-2 hover:bg-red-500/20 text-red-400 rounded transition">
+                        <i class="fa-solid fa-trash text-sm"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function loadAll() {
+            const resData = await fetch(`/api/guild-data/${guildId}`);
+            const data = await resData.json();
+            document.getElementById('guild-name').innerText = data.guildName;
+
+            const populate = (sel, list, type) => {
+                document.querySelectorAll(sel).forEach(e => {
+                    e.innerHTML = '<option value="">-- Aucun --</option>';
+                    list.forEach(i => e.innerHTML += `<option value="${i.id}">${type}${i.name}</option>`);
+                });
+            };
+            populate('.sel-channel', data.channels, '# ');
+            populate('.select-category', data.categories, '📂 ');
+            populate('.select-role', data.roles, '@ ');
+
+            // CHARGEMENT TABLEAU STAFF & WL
+            const mList = document.getElementById('members-list');
+            if(mList) {
+                mList.innerHTML = '';
+                if(data.members.length === 0) {
+                    mList.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500 italic">Aucun membre privilégié trouvé.</td></tr>';
+                } else {
+                    data.members.forEach(m => {
+                        let badges = '';
+                        if(m.isOwner) badges += '<span class="px-2 py-1 bg-yellow-500/10 text-yellow-500 rounded text-[10px] font-bold uppercase mr-1">👑 Owner</span>';
+                        if(m.isAdmin) badges += '<span class="px-2 py-1 bg-red-500/10 text-red-500 rounded text-[10px] font-bold uppercase mr-1">🛡️ Admin</span>';
+                        if(m.isWl) badges += '<span class="px-2 py-1 bg-blue-500/10 text-blue-500 rounded text-[10px] font-bold uppercase mr-1">⚪ WL</span>';
+
+                        mList.innerHTML += `
+                            <tr class="border-t border-white/5 hover:bg-white/5">
+                                <td class="p-6 flex items-center gap-3">
+                                    <img src="${m.avatar}" class="w-8 h-8 rounded-full"> 
+                                    <span class="font-bold">${m.tag}</span>
+                                </td>
+                                <td class="p-6 font-mono text-xs opacity-40">${m.id}</td>
+                                <td class="p-6">${badges}</td>
+                                <td class="p-6 text-right">
+                                    <button onclick="action('kick','${m.id}')" class="px-3 py-1 bg-white/5 hover:bg-white/10 rounded text-[10px] font-bold uppercase">Kick</button>
+                                </td>
+                            </tr>`;
+                    });
+                }
+            }
+
+            const resCfg = await fetch(`/api/config/${guildId}`);
+            const cfg = await resCfg.json();
+
+            // MAPPING CORRECT BASÉ SUR DATABASE.JS (Load)
+            const logMap = {
+                'logs_protection': 'log_protect_id', 
+                'logs_moderation': 'log_mod_id', 
+                'logs_messages': 'log_msg_id', 
+                'logs_voice': 'log_voice_id', 
+                'logs_traffic': 'log_traffic_id', 
+                'logs_invites': 'log_invite_id',
+                'logs_server': 'log_server_id', 
+                'logs_audit': 'log_audit_id', 
+                'logs_tickets': 'log_ticket_id',
+                'channel_action': 'nuke_action',
+                'webhook_action': 'nuke_action',
+                'antighostping_enabled': 'antimassmention_enabled',
+                'ticket_welcome_desc': 'ticket_welcome_msg', 
+                'ticket_msg_title': 'ticket_panel_title', 
+                'ticket_msg_desc': 'ticket_panel_desc'
+            };
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(c => {
+                if (logMap[c.id]) c.checked = cfg[logMap[c.id]] == 1;
+                else if (cfg[c.id] !== undefined) c.checked = cfg[c.id] == 1;
+            });
+
+            for (const [htmlId, dbCol] of Object.entries(logMap)) {
+                const el = document.getElementById(htmlId);
+                if(el && el.type !== 'checkbox') el.value = cfg[dbCol] || "";
+            }
+            document.querySelectorAll('input[type="text"], input[type="number"], select, textarea').forEach(i => {
+                if(!logMap[i.id] && cfg[i.id] !== undefined && !i.id.startsWith('emb-')) i.value = cfg[i.id];
+            });
+
+            try { ticketOptions = JSON.parse(cfg.ticket_options || '[]'); renderTicketOptions(); } catch(e) {}
+            
+            const current = data.memberCount || 0;
+            const fakeHistory = Array.from({length: 6}, (_, i) => Math.max(0, current - Math.floor(Math.random() * 5) - (5-i))); 
+            fakeHistory.push(current);
+
+            new Chart(document.getElementById('growthChart'), { type: 'line', data: { labels: ['J-6','J-5','J-4','J-3','J-2','Hier','Auj'], datasets: [{ label: 'Membres', data: fakeHistory, borderColor: '#5865F2', fill: true, backgroundColor: 'rgba(88,101,242,0.1)', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: true } });
+        }
+
+        function renderTicketOptions() {
+            const cont = document.getElementById('ticket-options-list');
+            cont.innerHTML = ticketOptions.length === 0 ? '<p class="text-[10px] text-gray-500 italic">Aucune catégorie.</p>' : '';
+            ticketOptions.forEach((o, idx) => {
+                cont.innerHTML += `<div class="p-3 bg-black/40 rounded-xl flex justify-between items-center"><span>${o.emoji || '📂'} ${o.label}</span><button onclick="ticketOptions.splice(${idx},1);renderTicketOptions()" class="text-red-500"><i class="fa-solid fa-trash"></i></button></div>`;
+            });
+        }
+
+        function addTicketOption() {
+            const l = prompt("Nom :"); if(!l) return;
+            const e = prompt("Emoji :"); 
+            ticketOptions.push({ id: Date.now().toString(), label: l, emoji: e || '🎫', role: null });
+            renderTicketOptions();
+        }
+
+        async function saveAllConfigs() {
+            const btn = document.getElementById('save-btn'); btn.innerHTML = 'SYNC...';
+            const config = {};
+            
+            const saveMap = {
+                'logs_protection': 'log_protect_id', 
+                'logs_moderation': 'log_mod_id', 
+                'logs_messages': 'log_msg_id', 
+                'logs_voice': 'log_voice_id', 
+                'logs_traffic': 'log_traffic_id', 
+                'logs_invites': 'log_invite_id',
+                'logs_server': 'log_server_id', 
+                'logs_audit': 'log_audit_id', 
+                'logs_tickets': 'log_ticket_id',
+                'channel_action': 'nuke_action', 
+                'webhook_action': 'nuke_action',
+                'antighostping_enabled': 'antimassmention_enabled',
+                'ticket_welcome_desc': 'ticket_welcome_msg',
+                'ticket_msg_title': 'ticket_panel_title',
+                'ticket_msg_desc': 'ticket_panel_desc'
+            };
+
+            document.querySelectorAll('main input, main select, main textarea').forEach(i => {
+                if(i.id && !i.id.startsWith('emb-') && i.id !== 'ticket_welcome_title') {
+                    const dbKey = saveMap[i.id] || i.id;
+                    config[dbKey] = i.type === 'checkbox' ? (i.checked ? 1 : 0) : i.value;
+                }
+            });
+            
+            config.ticket_options = JSON.stringify(ticketOptions);
+            await fetch('/api/config/save', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ guildId, config }) });
+            btn.innerHTML = 'OK !'; setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Sauvegarder', 2000);
+        }
+        
+        function toggleAllSecurity(state) {
+            const securityIds = [
+                'antiraid_enabled', 'antispam_enabled', 'antitoken_enabled', 
+                'antimassban_enabled', 'antirole_create_enabled', 'antirole_delete_enabled',
+                'antichannel_create_enabled', 'antichannel_delete_enabled', 'antiwebhook_enabled',
+                'antilink_enabled', 'antibot_enabled', 'antighostping_enabled'
+            ];
+            securityIds.forEach(id => { const el = document.getElementById(id); if(el) el.checked = state; });
+            saveAllConfigs();
+        }
+
+        async function deployTicket() { await saveAllConfigs(); const ch = prompt("ID du Salon Discord :"); if(ch) await fetch('/api/ticket/deploy', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ guildId, channelId: ch }) }); alert("Déployé !"); }
+
+        async function sendEmbed() { 
+            const payload = { 
+                channelId: document.getElementById('emb-channel').value, 
+                embed: { 
+                    title: document.getElementById('emb-title').value,
+                    description: document.getElementById('emb-desc').value,
+                    color: parseInt(document.getElementById('emb-color').value.replace('#',''), 16),
+                    footer: { text: document.getElementById('emb-footer').value },
+                    image: { url: document.getElementById('emb-image').value },
+                    thumbnail: { url: document.getElementById('emb-thumb').value },
+                    fields: embedFields
+                } 
+            }; 
+            await fetch(`/api/embed/send/${guildId}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) }); 
+            alert("✅ Embed envoyé !"); 
+        }
+
+        async function action(type, id) { if(!confirm("Sûr ?")) return; await fetch(`/api/action/${type}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ guildId, targetId: id }) }); alert("Action effectuée"); }
+
+        async function createBackup() {
+            const name = prompt("Nom de la backup (optionnel) :");
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = 'Création...';
+            
+            try {
+                const res = await fetch(`/api/backup/create`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ guildId, backupName: name || `Backup-${new Date().toLocaleDateString()}` })
+                });
+                const data = await res.json();
+                alert(`✅ Backup créée: ${data.backupId}`);
+                loadBackups();
+            } catch(e) {
+                alert('❌ Erreur création backup');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-plus"></i> Nouvelle Backup';
+        }
+
+        async function loadBackups() {
+            try {
+                const res = await fetch(`/api/backup/list/${guildId}`);
+                const backups = await res.json();
+                
+                const container = document.getElementById('backups-list');
+                if(backups.length === 0) {
+                    container.innerHTML = '<div class="config-card p-6 text-center text-gray-500">Aucune backup trouvée</div>';
+                    return;
+                }
+
+                container.innerHTML = backups.map(b => `
+                    <div class="config-card p-6 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-lg">${b.name}</p>
+                            <p class="text-xs text-gray-500">Créée le ${new Date(b.created).toLocaleString()}</p>
+                            <p class="text-xs text-gray-500 mt-1">${b.size ? `${(b.size / 1024 / 1024).toFixed(2)} MB` : 'Taille inconnue'}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="restoreBackup('${b.id}')" class="px-4 py-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold uppercase transition-all">
+                                ↩️ Restaurer
+                            </button>
+                            <button onclick="deleteBackup('${b.id}')" class="px-4 py-2 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg text-xs font-bold uppercase transition-all">
+                                🗑️ Supprimer
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) {
+                console.error('Erreur chargement backups:', e);
+            }
+        }
+
+        async function restoreBackup(backupId) {
+            if(!confirm('⚠️ Êtes-vous sûr? Cela restaurera TOUT le serveur.')) return;
+            
+            try {
+                const res = await fetch(`/api/backup/restore`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ guildId, backupId })
+                });
+                alert('✅ Restauration en cours...');
+                loadBackups();
+            } catch(e) {
+                alert('❌ Erreur restauration');
+            }
+        }
+
+        async function deleteBackup(backupId) {
+            if(!confirm('Supprimer cette backup?')) return;
+            
+            try {
+                await fetch(`/api/backup/delete`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ guildId, backupId })
+                });
+                alert('✅ Backup supprimée');
+                loadBackups();
+            } catch(e) {
+                alert('❌ Erreur suppression');
+            }
+        }
+
+        loadAll();
+        loadBackups();
+    </script>
+</body>
+</html>

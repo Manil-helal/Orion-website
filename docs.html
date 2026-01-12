@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion | Documentation Officielle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], heading: ['"Outfit"', 'sans-serif'], mono: ['"Fira Code"', 'monospace'] },
+                    colors: { brand: { bg: '#05060A', surface: '#0E1016', primary: '#5865F2', accent: '#F47FFF', sidebar: '#08090D' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav { background: rgba(5, 6, 10, 0.95); backdrop-filter: blur(24px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #5865F2; border-radius: 4px; }
+        .cmd-card { background: rgba(18, 20, 28, 0.6); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 16px; transition: all 0.2s; padding: 24px; }
+        .cmd-card:hover { border-color: #5865F2; transform: translateY(-2px); background: rgba(18, 20, 28, 0.9); }
+        #mobile-sidebar { transition: transform 0.3s ease-in-out; }
+        .sidebar-closed { transform: translateX(-100%); }
+        .sidebar-open { transform: translateX(0); }
+    </style>
+</head>
+<body class="bg-brand-bg text-white font-sans antialiased overflow-hidden h-screen flex flex-col">
+
+    <nav class="h-20 glass-nav w-full z-50 flex-shrink-0 flex items-center px-6 justify-between">
+        <div class="flex items-center gap-4">
+            <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 hover:text-white"><i class="fa-solid fa-book-open"></i></button>
+            <a href="index.html" class="flex items-center gap-3">
+                <img id="bot-logo" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-8 h-8 rounded-[12px] border border-white/10 hidden sm:block">
+                <span class="font-heading font-black text-xl uppercase tracking-[4px]">ORION <span class="text-gray-600 font-normal text-xs ml-1 italic tracking-widest">DOCS</span></span>
+            </a>
+        </div>
+
+        <div class="hidden md:flex items-center gap-2 bg-white/5 p-1 rounded-full border border-white/5">
+            <a href="index.html" class="px-6 py-1.5 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest">Accueil</a>
+            <a href="features.html" class="px-6 py-1.5 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest">Modules</a>
+            <a href="docs.html" class="px-6 py-1.5 rounded-full bg-brand-surface text-white text-[11px] font-black uppercase tracking-widest shadow-sm">Docs</a>
+            <a href="premium.html" class="px-6 py-1.5 rounded-full text-brand-accent hover:text-white transition-all text-[11px] font-black uppercase tracking-widest">Premium</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a href="/auth/discord" class="hidden md:block bg-white/5 border border-white/10 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[2px] hover:bg-brand-primary transition-all">Connexion</a>
+            <button id="mobile-menu-btn" class="md:hidden text-white p-2"><i class="fa-solid fa-bars text-2xl"></i></button>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden fixed inset-0 z-[60] bg-brand-bg/95 backdrop-blur-xl flex-col items-center justify-center gap-8">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
+        <a href="index.html" class="text-3xl font-heading font-black uppercase tracking-widest">Accueil</a>
+        <a href="features.html" class="text-3xl font-heading font-black uppercase tracking-widest">Modules</a>
+        <a href="docs.html" class="text-3xl font-heading font-black uppercase tracking-widest text-brand-primary">Docs</a>
+        <a href="premium.html" class="text-3xl font-heading font-black uppercase tracking-widest text-brand-accent">Premium</a>
+        <a href="/auth/discord" class="px-10 py-4 bg-brand-primary rounded-full font-black uppercase tracking-widest mt-4">Connexion</a>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden w-full max-w-[1900px] mx-auto relative">
+        
+        <aside id="mobile-sidebar" class="absolute lg:static inset-y-0 left-0 w-72 bg-brand-sidebar border-r border-white/5 overflow-y-auto custom-scroll p-8 z-40 sidebar-closed lg:translate-x-0 lg:block">
+            <div class="flex justify-between items-center lg:hidden mb-6">
+                <span class="font-bold text-xs uppercase tracking-widest text-gray-500">Sommaire</span>
+                <button onclick="toggleSidebar()" class="text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="mb-10">
+                <h5 class="text-[9px] font-black text-gray-600 uppercase tracking-[5px] mb-6 italic">Essentiels</h5>
+                <ul class="space-y-1">
+                    <li><a href="#mod" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-gavel w-6"></i> Modération</a></li>
+                    <li><a href="#admin" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-shield-halved w-6"></i> Administration</a></li>
+                    <li><a href="#logs" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-list-check w-6"></i> Logs</a></li>
+                </ul>
+            </div>
+            <div class="mb-10">
+                <h5 class="text-[9px] font-black text-gray-600 uppercase tracking-[5px] mb-6 italic">Social</h5>
+                <ul class="space-y-1">
+                    <li><a href="#xp" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-star w-6"></i> Niveaux</a></li>
+                    <li><a href="#ticket" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-ticket w-6"></i> Tickets</a></li>
+                    <li><a href="#fun" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-gamepad w-6"></i> Fun & Giveaways</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-[9px] font-black text-gray-600 uppercase tracking-[5px] mb-6 italic">Système</h5>
+                <ul class="space-y-1">
+                    <li><a href="#utils" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-gray-400 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-screwdriver-wrench w-6"></i> Utilitaires</a></li>
+                    <li><a href="#owner" onclick="closeSidebarOnMobile()" class="block px-4 py-3 text-xs text-red-500 hover:text-white rounded-xl transition-all hover:bg-white/5"><i class="fa-solid fa-crown w-6"></i> Owner Only</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden backdrop-blur-sm"></div>
+
+        <main class="flex-1 overflow-y-auto custom-scroll p-6 md:p-20 bg-brand-bg relative scroll-smooth">
+            <div class="max-w-5xl mx-auto space-y-32 pb-24">
+                
+                <header>
+                    <h1 class="text-4xl md:text-6xl font-heading font-black mb-6 italic">Documentation <span class="text-brand-primary">Complète.</span></h1>
+                    <p class="text-gray-500 text-sm md:text-lg font-light leading-relaxed">Guide complet de toutes les commandes Orion V10. Les badges indiquent la disponibilité (FREE/PREMIUM).</p>
+                </header>
+
+                <section id="mod">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-red-500 uppercase tracking-tighter border-b border-white/5 pb-4">🛡️ Modération</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/ban</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/ban [user] [raison]</code><p class="text-xs text-gray-400">Bannit un utilisateur du serveur définitivement.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/quickban</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Ban rapide sans confirmation.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/kick</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/kick [user] [raison]</code><p class="text-xs text-gray-400">Expulse un utilisateur du serveur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/timeout</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/timeout [user] [temps]</code><p class="text-xs text-gray-400">Met un utilisateur en timeout (exclut temporairement).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/warn</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/warn add/list/remove</code><p class="text-xs text-gray-400">Gère les avertissements avec historique complet.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/clear</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/clear [nombre]</code><p class="text-xs text-gray-400">Supprime un nombre spécifique de messages.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/lock & /unlock</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Verrouille ou déverrouille le salon actuel.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/nuke</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Clone et supprime le salon pour effacer l'historique.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/unbanall</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Débannit tous les utilisateurs bannis d'un coup.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/voicemod</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Gestion des permissions vocales (muet, sourd, etc).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/snipes</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Affiche les messages supprimés et édités.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-red-400 text-lg">/report</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Signale un message ou un utilisateur.</p></div>
+                    </div>
+                </section>
+
+                <section id="admin">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-green-500 uppercase tracking-tighter border-b border-white/5 pb-4">⚙️ Administration</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/setup</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Lance la configuration assistée complète du bot.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/backup</h4><span class="px-2 py-1 text-[9px] font-black bg-brand-accent/20 text-brand-accent rounded border border-brand-accent/30 uppercase tracking-wider">PREMIUM</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/backup create | load [id]</code><p class="text-xs text-gray-400">Crée ou charge une sauvegarde. Free: 1 sauvegarde, Premium: illimité.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/secur</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Configure les protections (Anti-spam, Anti-bot, etc.).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/setwelcome</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Configure le message et l'image de bienvenue.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/massrole</h4><span class="px-2 py-1 text-[9px] font-black bg-brand-accent/20 text-brand-accent rounded border border-brand-accent/30 uppercase tracking-wider">PREMIUM</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/massrole [add/remove] [role]</code><p class="text-xs text-gray-400">Ajoute/retire un rôle à tous les membres en masse.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/rlist</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Liste tous les rôles du serveur avec infos.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/setlevel</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Active ou désactive le système de niveaux.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/dashboard</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Accès au dashboard web de configuration.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/autorole</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Ajoute automatiquement un rôle aux nouveaux membres.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/reactionrole</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Système de rôles par réaction sur un message.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/autoreply</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Réponses automatiques aux messages contenant certains mots.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-green-400 text-lg">/maintenance</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Active le mode maintenance du serveur.</p></div>
+                    </div>
+                </section>
+
+                <section id="logs">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-gray-400 uppercase tracking-tighter border-b border-white/5 pb-4">📋 Logs & Événements</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-white text-lg">/logs</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Active/désactive les modules de logs (suppression, édition, etc).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-white text-lg">/presetlogs</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Applique des configurations de logs prédéfinies.</p></div>
+                    </div>
+                </section>
+
+                <section id="xp">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-yellow-500 uppercase tracking-tighter border-b border-white/5 pb-4">📈 Niveaux & XP</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-yellow-400 text-lg">/rank</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Affiche la carte de niveau (Rank Card) d'un membre.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-yellow-400 text-lg">/leaderboard</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Affiche le top 10 des utilisateurs avec le plus d'XP.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-yellow-400 text-lg">/setreward</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Configure un rôle récompense pour un niveau.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-yellow-400 text-lg">/setbackground</h4><span class="px-2 py-1 text-[9px] font-black bg-brand-accent/20 text-brand-accent rounded border border-brand-accent/30 uppercase tracking-wider">PREMIUM</span></div><p class="text-xs text-gray-400">Personnalise l'arrière-plan de votre Rank Card.</p></div>
+                    </div>
+                </section>
+
+                <section id="ticket">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-blue-400 uppercase tracking-tighter border-b border-white/5 pb-4">🎫 Tickets & Support</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-blue-400 text-lg">/t-config</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Configure le système de tickets (catégorie, salons, etc.).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-blue-400 text-lg">/ticket</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/ticket [claim|add|remove]</code><p class="text-xs text-gray-400">Gère les tickets (prendre en charge, ajouter/retirer membres). Transcripts HTML en DM.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-blue-400 text-lg">/apply</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><code class="text-xs text-gray-500 block mb-2 font-mono">/apply [setup|postuler]</code><p class="text-xs text-gray-400">Système de recrutement avec formulaires de candidature.</p></div>
+                    </div>
+                </section>
+
+                <section id="fun">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-pink-500 uppercase tracking-tighter border-b border-white/5 pb-4">🎉 Fun & Giveaways</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/giveaway</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Lance un giveaway automatique avec conditions.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/poll</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Crée des sondages simples ou complexes avec réactions.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/8ball</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Pose une question à la boule de cristal magique.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/ship</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Crée des couples aléatoires entre membres.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/ascii</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Convertit du texte en art ASCII.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/coinflip</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Lance une pièce de monnaie virtuelle.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/joke</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Raconte une blague aléatoire.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/roll</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Lance un ou plusieurs dés virtuels.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-pink-400 text-lg">/trivia</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Jeu de trivias avec questions aléatoires.</p></div>
+                    </div>
+                </section>
+
+                <section id="utils">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-purple-400 uppercase tracking-tighter border-b border-white/5 pb-4">🔧 Utilitaires</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/embed</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Créateur d'embeds personnalisés avec prévisualisation.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/say</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Envoie un message en tant que bot dans un salon.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/whois</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Affiche les infos complètes d'un utilisateur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/help</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Liste de toutes les commandes disponibles.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/topinvite</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Affiche le classement des meilleures invitations.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/pic</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Envoie l'avatar ou la bannière d'un utilisateur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/polls</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Crée des sondages interactifs pour le serveur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/vc</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Gère les salons vocaux (création, limite, etc.).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/infos</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Affiche les infos du serveur (membres, création, etc.).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/suggestion</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Permet aux utilisateurs de suggérer des améliorations.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/emojis</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Liste et gère les émojis du serveur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/tools</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Divers outils utilitaires (encodage, hashage, etc.).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/quote</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Cite un message d'un utilisateur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/afk</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Marque l'utilisateur comme absent avec un message.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-purple-400 text-lg">/editembed</h4><span class="px-2 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded border border-green-500/30 uppercase tracking-wider">FREE</span></div><p class="text-xs text-gray-400">Édite un embed existant.</p></div>
+                    </div>
+                </section>
+
+                <section id="owner">
+                    <h2 class="text-3xl font-heading font-black italic mb-10 text-brand-accent uppercase tracking-tighter border-b border-white/5 pb-4">👑 Propriétaire (Owner Only)</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/serverlist</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Liste tous les serveurs où le bot est.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/blacklist</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Gère la blacklist des utilisateurs/serveurs.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/whitelist</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Gère la whitelist des utilisateurs autorisés.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/reboot</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Redémarre le bot complètement.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/setstatus</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Change le statut du bot (Playing, Streaming, etc).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/update</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Publie un message de mise à jour.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/dm</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Envoie un DM direct à un utilisateur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/owner</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Commandes propriétaire (setname, etc).</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/setpremium</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Ajoute/retire le Premium à un serveur.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/pannel-owner</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Accès au panel de gestion propriétaire.</p></div>
+                        <div class="cmd-card"><div class="flex justify-between items-center mb-2"><h4 class="font-black text-brand-accent text-sm">/presetlogsowner</h4><span class="px-2 py-1 text-[8px] font-black bg-red-500/20 text-red-400 rounded uppercase tracking-wider">OWNER</span></div><p class="text-xs text-gray-400">Configs de logs prédéfinies pour propriétaire.</p></div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function fetchBot() {
+            try {
+                const res = await fetch('/api/bot-info');
+                const data = await res.json();
+                if(data.avatar) document.getElementById('bot-logo').src = data.avatar;
+            } catch(e) {}
+        }
+        fetchBot();
+
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        function toggleMenu() {
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+            }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+
+        const sidebar = document.getElementById('mobile-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            if (sidebar.classList.contains('sidebar-closed')) {
+                sidebar.classList.remove('sidebar-closed');
+                sidebar.classList.add('sidebar-open');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('sidebar-closed');
+                sidebar.classList.remove('sidebar-open');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function closeSidebarOnMobile() {
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+        }
+    </script>
+</body>
+</html>

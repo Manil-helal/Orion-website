@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Orion | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-main: #05060A;
+            --bg-secondary: #0E1016;
+            --brand-primary: #5865F2;
+            --brand-accent: #F47FFF;
+            --success: #4ADE80;
+        }
+        
+        body { 
+            background: var(--bg-main);
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .glass-nav { 
+            background: rgba(14, 16, 22, 0.9); 
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(18, 20, 28, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(18, 20, 28, 0.7);
+            border-color: rgba(88, 101, 242, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(88, 101, 242, 0.15);
+        }
+
+        .stat-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .server-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        #mobile-menu.hidden { pointer-events: none; opacity: 0; }
+        #mobile-menu.flex { pointer-events: auto; opacity: 1; }
+
+        .btn-primary {
+            background: var(--brand-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(88, 101, 242, 0.3);
+        }
+
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid var(--brand-primary);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-number {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -2px;
+        }
+
+        .stat-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-var(--bg-main) via-var(--bg-secondary) to-var(--bg-main)">
+
+    <!-- Navigation Supérieure -->
+    <nav class="glass-nav fixed w-full z-50 top-0 left-0 h-20 flex items-center px-6 justify-between">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <img id="bot-logo" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-10 h-10 rounded-lg border border-white/10 group-hover:border-var(--brand-primary) transition">
+            <span class="font-black text-xl uppercase tracking-tighter">ORION</span>
+        </a>
+        
+        <div class="hidden md:flex items-center gap-6">
+            <div class="flex items-center gap-2 text-xs">
+                <span class="px-3 py-1 glass-card rounded-full stat-badge">Panneau de Contrôle</span>
+            </div>
+            <div id="user-info" class="flex items-center gap-3 glass-card px-4 py-2 rounded-full">
+                <div class="spinner"></div>
+                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Chargement...</span>
+            </div>
+        </div>
+        
+        <button id="mobile-menu-btn" class="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </nav>
+
+    <!-- Menu Mobile -->
+    <div id="mobile-menu" class="hidden fixed inset-0 z-40 bg-var(--bg-main)/95 backdrop-blur-xl flex-col items-center justify-center gap-8 pt-20">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white p-2 hover:bg-white/10 rounded-lg transition">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+        <div id="mobile-user" class="text-center mb-4">
+            <img id="mobile-avatar" src="" class="w-20 h-20 rounded-full mx-auto mb-3 border-2 border-var(--brand-primary)">
+            <span id="mobile-username" class="text-xl font-bold block"></span>
+        </div>
+        <nav class="flex flex-col gap-4 text-center">
+            <a href="index.html" class="text-lg font-semibold hover:text-var(--brand-primary) transition">Accueil</a>
+            <a href="/logout" class="text-lg font-semibold text-red-400 hover:text-red-300 transition">Déconnexion</a>
+        </nav>
+    </div>
+
+    <!-- Contenu Principal -->
+    <div class="pt-28 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Header -->
+            <div class="mb-12">
+                <h1 class="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-3">
+                    <span class="gradient-text">Tableau de Bord</span>
+                </h1>
+                <p class="text-gray-400 text-base">Gérez vos serveurs Discord en un seul endroit</p>
+            </div>
+
+            <!-- Stats Principales (3 colonnes) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                <!-- Stat: Tickets -->
+                <div class="glass-card stat-card p-8 rounded-2xl group" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="stat-badge text-gray-400 mb-2">Tickets Ouverts</p>
+                            <p id="total-tickets" class="stat-number text-var(--brand-primary)">0</p>
+                        </div>
+                        <div class="p-4 bg-var(--brand-primary)/10 rounded-2xl group-hover:bg-var(--brand-primary)/20 transition">
+                            <i class="fa-solid fa-ticket text-2xl text-var(--brand-primary)"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500">En attente de réponse</div>
+                </div>
+
+                <!-- Stat: Modération -->
+                <div class="glass-card stat-card p-8 rounded-2xl group" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="stat-badge text-gray-400 mb-2">Actions Modération</p>
+                            <p id="total-bans" class="stat-number text-red-400">0</p>
+                        </div>
+                        <div class="p-4 bg-red-500/10 rounded-2xl group-hover:bg-red-500/20 transition">
+                            <i class="fa-solid fa-gavel text-2xl text-red-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500">Bans + Kicks + Warns</div>
+                </div>
+
+                <!-- Stat: Top Contributeur -->
+                <div class="glass-card stat-card p-8 rounded-2xl group" style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="stat-badge text-gray-400 mb-2">Top Contributeur</p>
+                            <p id="top-xp" class="stat-number text-var(--brand-accent) text-2xl line-clamp-2">--</p>
+                        </div>
+                        <div class="p-4 bg-var(--brand-accent)/10 rounded-2xl group-hover:bg-var(--brand-accent)/20 transition">
+                            <i class="fa-solid fa-crown text-2xl text-var(--brand-accent)"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500">Le plus actif en XP</div>
+                </div>
+            </div>
+
+            <!-- Analytics Détaillées -->
+            <div class="mb-16">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">📊 Analytics</h2>
+                    <select id="analytics-period" class="px-4 py-2 glass-card rounded-lg text-xs font-bold uppercase stat-badge">
+                        <option value="7">7 Jours</option>
+                        <option value="30">30 Jours</option>
+                        <option value="90">90 Jours</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-6 rounded-2xl">
+                        <p class="stat-badge text-gray-400 mb-3">Membres Total</p>
+                        <p id="stat-members" class="text-3xl font-black text-var(--brand-primary)">0</p>
+                        <p class="text-xs text-gray-500 mt-1" id="stat-members-change">+0 cette semaine</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <p class="stat-badge text-gray-400 mb-3">Messages Jour</p>
+                        <p id="stat-messages" class="text-3xl font-black text-success">0</p>
+                        <p class="text-xs text-gray-500 mt-1">Moyenne</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <p class="stat-badge text-gray-400 mb-3">Infractions</p>
+                        <p id="stat-infractions" class="text-3xl font-black text-red-400">0</p>
+                        <p class="text-xs text-gray-500 mt-1">Bans + Kicks</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <p class="stat-badge text-gray-400 mb-3">Taux Rétention</p>
+                        <p id="stat-retention" class="text-3xl font-black text-var(--brand-accent)">0%</p>
+                        <p class="text-xs text-gray-500 mt-1">Membres conservés</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Contributors & Infractions -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+                <div>
+                    <h3 class="text-2xl font-black uppercase tracking-tighter mb-6">🏆 Top 10 Contributeurs</h3>
+                    <div class="space-y-3" id="top-contributors">
+                        <div class="glass-card p-4 rounded-xl animate-pulse h-12"></div>
+                        <div class="glass-card p-4 rounded-xl animate-pulse h-12"></div>
+                        <div class="glass-card p-4 rounded-xl animate-pulse h-12"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-black uppercase tracking-tighter mb-6">⚠️ Infractions (7j)</h3>
+                    <div class="space-y-3" id="infractions-list">
+                        <div class="glass-card p-4 rounded-xl animate-pulse h-12"></div>
+                        <div class="glass-card p-4 rounded-xl animate-pulse h-12"></div>
+                        <div class="glass-card p-4 rounded-xl animate-pulse h-12"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Serveurs -->
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-black uppercase tracking-tighter">Vos Serveurs</h2>
+                        <p class="text-gray-400 text-sm mt-1">Gérez chaque serveur individuellement</p>
+                    </div>
+                    <span id="server-count" class="inline-block px-5 py-2 glass-card rounded-full stat-badge text-var(--brand-primary)">0</span>
+                </div>
+                
+                <div id="servers-container" class="feature-grid">
+                    <!-- Skeleton Loading x3 -->
+                    <div class="glass-card p-8 rounded-2xl animate-pulse">
+                        <div class="w-20 h-20 bg-white/10 rounded-2xl mx-auto mb-4"></div>
+                        <div class="h-4 bg-white/10 rounded mb-4 w-3/4 mx-auto"></div>
+                        <div class="h-10 bg-var(--brand-primary)/20 rounded-lg"></div>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl animate-pulse">
+                        <div class="w-20 h-20 bg-white/10 rounded-2xl mx-auto mb-4"></div>
+                        <div class="h-4 bg-white/10 rounded mb-4 w-3/4 mx-auto"></div>
+                        <div class="h-10 bg-var(--brand-primary)/20 rounded-lg"></div>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl animate-pulse">
+                        <div class="w-20 h-20 bg-white/10 rounded-2xl mx-auto mb-4"></div>
+                        <div class="h-4 bg-white/10 rounded mb-4 w-3/4 mx-auto"></div>
+                        <div class="h-10 bg-var(--brand-primary)/20 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Menu Mobile
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        function toggleMenu() {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        }
+        
+        menuBtn?.addEventListener('click', toggleMenu);
+        closeBtn?.addEventListener('click', toggleMenu);
+
+        // Fermer le menu au clic sur un lien
+        mobileMenu?.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+        // Chargement des données
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/api/user');
+                if (res.status === 401) return window.location.href = '/auth/discord';
+                
+                const user = await res.json();
+                updateUserInfo(user);
+                
+                const container = document.getElementById('servers-container');
+                container.innerHTML = '';
+
+                let serverCount = 0;
+                let totalTickets = 0;
+                let totalBans = 0;
+                let topUser = 'N/A';
+
+                for (const guild of user.guilds) {
+                    serverCount++;
+                    const icon = guild.icon || 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'glass-card server-card p-6 rounded-2xl flex flex-col text-center group';
+                    card.style.animationDelay = `${serverCount * 0.05}s`;
+                    
+                    card.innerHTML = `
+                        <img src="${icon}" alt="${guild.name}" class="w-20 h-20 rounded-2xl mb-4 object-cover border-2 border-white/10 group-hover:border-var(--brand-primary) transition mx-auto">
+                        <h3 class="font-bold text-base mb-4 line-clamp-2 min-h-14 flex items-center justify-center">${guild.name}</h3>
+                        ${guild.hasBot ? 
+                            `<a href="config.html?guild_id=${guild.id}" class="w-full py-3 btn-primary text-white rounded-lg font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 group/btn hover:shadow-lg">
+                                <i class="fa-solid fa-sliders"></i> Configurer
+                            </a>` : 
+                            `<a href="https://discord.com/oauth2/authorize?client_id=1443737588434473010&permissions=8&scope=bot&guild_id=${guild.id}" target="_blank" class="w-full py-3 glass-card border border-white/10 rounded-lg font-bold text-xs uppercase tracking-widest hover:border-var(--brand-primary) hover:bg-white/5 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Inviter
+                            </a>`
+                        }
+                    `;
+                    
+                    container.appendChild(card);
+
+                    if (guild.hasBot) {
+                        try {
+                            const statsRes = await fetch(`/api/guild-stats/${guild.id}`);
+                            if (!statsRes.ok) throw new Error('Stats fetch failed');
+                            
+                            const stats = await statsRes.json();
+                            totalTickets += stats.openTickets || 0;
+                            totalBans += stats.bans || 0;
+                            if (stats.topUser && stats.topUser !== 'N/A') topUser = stats.topUser;
+                        } catch (e) { 
+                            console.error('Erreur stats:', e); 
+                        }
+                    }
+                }
+
+                // Mise à jour des stats globales
+                document.getElementById('total-tickets').innerText = totalTickets.toString();
+                document.getElementById('total-bans').innerText = totalBans.toString();
+                document.getElementById('top-xp').innerText = topUser || '—';
+                document.getElementById('server-count').innerText = serverCount.toString();
+
+            } catch (e) {
+                console.error('Erreur chargement:', e);
+                const container = document.getElementById('servers-container');
+                container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-400">Erreur lors du chargement des serveurs</p></div>';
+            }
+        }
+
+        function updateUserInfo(user) {
+            // Desktop
+            const userInfo = document.getElementById('user-info');
+            userInfo.innerHTML = `
+                <img src="${user.avatar}" alt="${user.username}" class="w-8 h-8 rounded-full border-2 border-var(--brand-primary)">
+                <span class="text-xs font-bold uppercase tracking-widest text-gray-300">${user.username}</span>
+                <a href="/logout" class="ml-2 p-1 hover:bg-red-500/20 rounded transition text-red-400 hover:text-red-300">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
+            `;
+
+            // Mobile
+            document.getElementById('mobile-avatar').src = user.avatar;
+            document.getElementById('mobile-username').innerText = user.username;
+        }
+
+        // Charger au démarrage
+        loadDashboard();
+
+        // Rafraîchir les stats toutes les 30 secondes
+        setInterval(loadDashboard, 30000);
+
+        // Récupérer le logo du bot
+        async function fetchBotLogo() {
+            try {
+                const res = await fetch('/api/bot-info');
+                const data = await res.json();
+                if(data.avatar) document.getElementById('bot-logo').src = data.avatar;
+            } catch(e) {}
+        }
+        fetchBotLogo();
+    </script>
+</body>
+</html>

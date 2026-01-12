@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion | Modules Applicatifs V10</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], heading: ['"Outfit"', 'sans-serif'] },
+                    colors: { brand: { bg: '#05060A', surface: '#0E1016', primary: '#5865F2', accent: '#F47FFF', secondary: '#4ADE80' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav { background: rgba(5, 6, 10, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .module-card { background: rgba(18, 20, 28, 0.6); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 40px; overflow: hidden; transition: all 0.4s; }
+        .module-card:hover { border-color: #5865F2; transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        #mobile-menu.hidden { pointer-events: none; opacity: 0; transform: scale(0.95); }
+        #mobile-menu.flex { pointer-events: auto; opacity: 1; transform: scale(1); }
+    </style>
+</head>
+<body class="bg-brand-bg text-white font-sans antialiased overflow-x-hidden">
+
+    <div class="fixed inset-0 bg-grid-pattern [background-size:60px_60px] pointer-events-none z-0"></div>
+
+    <nav class="fixed w-full z-50 top-0 glass-nav h-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-6 w-full flex justify-between items-center text-center">
+            <a href="index.html" class="flex items-center gap-3"><img id="bot-logo" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-10 h-10 rounded-[14px] shadow-lg"><span class="font-heading font-bold text-2xl tracking-tighter uppercase">ORION</span></a>
+            <div class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
+                <a href="index.html" class="px-6 py-2 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest">Accueil</a>
+                <a href="features.html" class="px-6 py-2 rounded-full bg-brand-primary text-white text-[11px] font-black uppercase tracking-widest shadow-lg">Modules</a>
+                <a href="docs.html" class="px-6 py-2 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest">Docs</a>
+                <a href="premium.html" class="px-6 py-2 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest">Premium</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/auth/discord" class="hidden md:block px-6 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-brand-primary transition-all text-[11px] font-black uppercase tracking-widest">Connexion</a>
+                <button id="mobile-menu-btn" class="md:hidden text-white p-2"><i class="fa-solid fa-bars text-2xl"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden fixed inset-0 z-[60] bg-brand-bg/95 backdrop-blur-xl flex-col items-center justify-center gap-8">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
+        <a href="index.html" class="text-3xl font-heading font-black uppercase tracking-widest">Accueil</a>
+        <a href="features.html" class="text-3xl font-heading font-black uppercase tracking-widest">Modules</a>
+        <a href="premium.html" class="text-3xl font-heading font-black uppercase tracking-widest text-brand-accent">Premium</a>
+    </div>
+
+    <main class="relative z-10 pt-48 pb-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-24">
+                <h1 class="font-heading text-5xl md:text-7xl font-black mb-6 leading-tight">Tous les <span class="text-brand-primary">modules</span></h1>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto">Chaque module est spécialisé pour une gestion précise de votre serveur. Découvrez les fonctionnalités FREE et PREMIUM.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- Module 1 -->
+                <div data-aos="fade-up" class="module-card p-10 flex flex-col border-brand-primary/20">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <div class="w-16 h-16 bg-brand-primary/15 rounded-2xl flex items-center justify-center text-brand-primary text-3xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h3 class="text-2xl font-black uppercase tracking-tight">Gouvernance Admin</h3>
+                        </div>
+                        <span class="px-3 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded-lg border border-green-500/30 uppercase">FREE</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-5">Contrôle total des permissions, rôles et sécurité du serveur.</p>
+                    <div class="space-y-2 text-xs text-gray-300 mb-6">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Setup assisté automatisé</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Antiraid & Antibot</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Logs complets (suppression, édition)</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Whitelist & Blacklist</div>
+                    </div>
+                    <a href="docs.html#admin" class="text-brand-primary text-xs font-black uppercase tracking-widest hover:text-brand-accent transition">Voir toutes les commandes →</a>
+                </div>
+
+                <!-- Module 2 -->
+                <div data-aos="fade-up" data-aos-delay="50" class="module-card p-10 flex flex-col border-brand-accent/20">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <div class="w-16 h-16 bg-brand-accent/15 rounded-2xl flex items-center justify-center text-brand-accent text-3xl mb-4"><i class="fa-solid fa-microphone-lines"></i></div>
+                            <h3 class="text-2xl font-black uppercase tracking-tight">Vocal Dynamique</h3>
+                        </div>
+                        <span class="px-3 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded-lg border border-green-500/30 uppercase">FREE</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-5">Salons vocaux temporaires avec gestion intégrée.</p>
+                    <div class="space-y-2 text-xs text-gray-300 mb-6">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Création automatique en 1 clic</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Lock/Unlock du salon</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Kick/Rename automatique</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Suppression auto à la fermeture</div>
+                    </div>
+                    <a href="docs.html#utils" class="text-brand-accent text-xs font-black uppercase tracking-widest hover:text-brand-primary transition">Voir toutes les commandes →</a>
+                </div>
+
+                <!-- Module 3 -->
+                <div data-aos="fade-up" data-aos-delay="100" class="module-card p-10 flex flex-col border-yellow-500/20">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <div class="w-16 h-16 bg-yellow-500/15 rounded-2xl flex items-center justify-center text-yellow-400 text-3xl mb-4"><i class="fa-solid fa-trophy"></i></div>
+                            <h3 class="text-2xl font-black uppercase tracking-tight">Compétition & XP</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded-lg border border-green-500/30 uppercase">FREE</span>
+                            <span class="px-3 py-1 text-[9px] font-black bg-brand-accent/20 text-brand-accent rounded-lg border border-brand-accent/30 uppercase">+PREMIUM</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-5">Système de niveaux avec récompenses et classements.</p>
+                    <div class="space-y-2 text-xs text-gray-300 mb-6">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Niveaux textuel & vocal</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Récompenses de rôles auto</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> <strong>Rank Cards personnalisées</strong> (Premium)</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> <strong>Backgrounds custom</strong> (Premium)</div>
+                    </div>
+                    <a href="docs.html#xp" class="text-yellow-400 text-xs font-black uppercase tracking-widest hover:text-yellow-300 transition">Voir toutes les commandes →</a>
+                </div>
+
+                <!-- Module 4 -->
+                <div data-aos="fade-up" data-aos-delay="150" class="module-card p-10 flex flex-col border-blue-500/20">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <div class="w-16 h-16 bg-blue-500/15 rounded-2xl flex items-center justify-center text-blue-400 text-3xl mb-4"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <h3 class="text-2xl font-black uppercase tracking-tight">Utilitaires Pro</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 text-[9px] font-black bg-green-500/20 text-green-400 rounded-lg border border-green-500/30 uppercase">FREE</span>
+                            <span class="px-3 py-1 text-[9px] font-black bg-brand-accent/20 text-brand-accent rounded-lg border border-brand-accent/30 uppercase">+PREMIUM</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-5">Outils utiles pour modération et engagement.</p>
+                    <div class="space-y-2 text-xs text-gray-300 mb-6">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Sondages interactifs</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Embed Builder complet</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> <strong>Invite Logger avancé</strong> (Premium)</div>
+                    </div>
+                    <a href="docs.html#utils" class="text-blue-400 text-xs font-black uppercase tracking-widest hover:text-blue-300 transition">Voir toutes les commandes →</a>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <p class="text-gray-500 text-sm mb-6">Besoin de plus de détails sur les fonctionnalités?</p>
+                <a href="premium.html" class="inline-flex items-center gap-2 px-8 py-4 bg-brand-primary text-white rounded-full font-black text-sm uppercase tracking-widest hover:scale-105 transition-transform">
+                    Comparer les plans <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-20 text-center border-t border-white/5 text-gray-500">
+        <p>© 2025 Orion | <a href="https://discord.gg/KcVx6eQM5W" class="hover:text-white underline underline-offset-4 decoration-brand-primary">Lien Support Officiel</a></p>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+        
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMenu() {
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+            }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+
+        async function sync() {
+            try {
+                const res = await fetch('/api/bot-info');
+                const data = await res.json();
+                if(data.avatar) document.getElementById('bot-logo').src = data.avatar;
+            } catch(e) {}
+        }
+        sync();
+    </script>
+</body>
+</html>

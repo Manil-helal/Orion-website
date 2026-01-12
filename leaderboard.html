@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion | Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], heading: ['"Outfit"', 'sans-serif'] },
+                    colors: { brand: { bg: '#05060A', surface: '#0E1016', primary: '#5865F2', accent: '#F47FFF', secondary: '#4ADE80' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: linear-gradient(135deg, #05060A 0%, #0f1219 100%); }
+        .glass-card { background: rgba(18, 20, 28, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; }
+        .glass-card:hover { border-color: rgba(88, 101, 242, 0.3); transform: translateY(-2px); }
+        .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%); }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1E212B; border-radius: 3px; }
+    </style>
+</head>
+<body class="text-white font-sans">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 h-20 flex items-center px-6 justify-between bg-brand-bg/80 backdrop-blur-xl border-b border-white/5">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <img src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-10 h-10 rounded-lg border border-white/10 group-hover:border-brand-primary transition">
+            <span class="font-black text-xl uppercase tracking-tighter">ORION</span>
+        </a>
+        
+        <div class="hidden md:flex items-center gap-6">
+            <a href="index.html" class="text-sm font-semibold hover:text-brand-primary transition">Accueil</a>
+            <a href="leaderboard.html" class="text-sm font-semibold text-brand-primary">Classement</a>
+            <a href="premium.html" class="text-sm font-semibold hover:text-brand-primary transition">Premium</a>
+        </div>
+
+        <button id="mobile-menu-btn" class="md:hidden text-white p-2"><i class="fa-solid fa-bars text-xl"></i></button>
+    </nav>
+
+    <div class="pt-32 pb-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Header -->
+            <div class="mb-16 text-center">
+                <h1 class="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-3">
+                    🏆 Classement Global
+                </h1>
+                <p class="text-gray-400 text-lg">Les meilleurs contributeurs d'Orion</p>
+            </div>
+
+            <!-- Filtres -->
+            <div class="mb-12 flex flex-col md:flex-row gap-4 justify-center">
+                <select id="server-filter" class="px-6 py-3 glass-card rounded-xl text-sm font-bold uppercase border-none">
+                    <option value="">-- Tous les serveurs --</option>
+                </select>
+                <select id="filter-type" class="px-6 py-3 glass-card rounded-xl text-sm font-bold uppercase border-none">
+                    <option value="xp">Par XP</option>
+                    <option value="messages">Par Messages</option>
+                    <option value="level">Par Niveau</option>
+                    <option value="invites">Par Invitations</option>
+                </select>
+            </div>
+
+            <!-- Top 3 Podium -->
+            <div class="mb-16">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 lg:gap-8">
+                    <!-- 2nd Place -->
+                    <div class="md:order-first">
+                        <div class="glass-card p-8 rounded-2xl text-center h-full flex flex-col items-center justify-end">
+                            <div class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-400 overflow-hidden">
+                                <img id="top-2-avatar" src="https://cdn.discordapp.com/embed/avatars/1.png" class="w-full h-full object-cover">
+                            </div>
+                            <p id="top-2-name" class="text-2xl font-black mb-2">--</p>
+                            <p id="top-2-stat" class="text-sm text-gray-400 mb-4">--</p>
+                            <div class="text-4xl font-black text-gray-400">2️⃣</div>
+                        </div>
+                    </div>
+
+                    <!-- 1st Place -->
+                    <div class="md:order-last">
+                        <div class="glass-card rank-1 p-8 rounded-2xl text-center h-full flex flex-col items-center justify-end scale-105">
+                            <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-yellow-200 overflow-hidden">
+                                <img id="top-1-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-full h-full object-cover">
+                            </div>
+                            <p id="top-1-name" class="text-2xl font-black text-black mb-2">--</p>
+                            <p id="top-1-stat" class="text-sm text-black/70 mb-4 font-bold">--</p>
+                            <div class="text-5xl font-black">👑</div>
+                        </div>
+                    </div>
+
+                    <!-- 3rd Place -->
+                    <div>
+                        <div class="glass-card rank-3 p-8 rounded-2xl text-center h-full flex flex-col items-center justify-end">
+                            <div class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-orange-600 overflow-hidden">
+                                <img id="top-3-avatar" src="https://cdn.discordapp.com/embed/avatars/2.png" class="w-full h-full object-cover">
+                            </div>
+                            <p id="top-3-name" class="text-2xl font-black mb-2">--</p>
+                            <p id="top-3-stat" class="text-sm text-gray-400 mb-4">--</p>
+                            <div class="text-4xl font-black text-orange-700">3️⃣</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 50 Tableau -->
+            <div>
+                <h2 class="text-3xl font-black uppercase tracking-tighter mb-8">Top 50</h2>
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto custom-scroll">
+                        <table class="w-full">
+                            <thead class="bg-white/5 border-b border-white/5">
+                                <tr class="text-xs uppercase font-black text-gray-400">
+                                    <th class="px-6 py-4 text-left">#</th>
+                                    <th class="px-6 py-4 text-left">Utilisateur</th>
+                                    <th class="px-6 py-4 text-center">Serveur</th>
+                                    <th class="px-6 py-4 text-right">XP</th>
+                                    <th class="px-6 py-4 text-right">Niveau</th>
+                                    <th class="px-6 py-4 text-right">Messages</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <!-- Les lignes seront générées par JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadLeaderboard() {
+            try {
+                // Récupère les données du leaderboard depuis l'API
+                const res = await fetch('/api/leaderboard');
+                const data = await res.json();
+
+                // Top 3
+                if(data.top3[0]) {
+                    document.getElementById('top-1-avatar').src = data.top3[0].avatar;
+                    document.getElementById('top-1-name').textContent = data.top3[0].name;
+                    document.getElementById('top-1-stat').textContent = `${data.top3[0].xp.toLocaleString()} XP`;
+                }
+                if(data.top3[1]) {
+                    document.getElementById('top-2-avatar').src = data.top3[1].avatar;
+                    document.getElementById('top-2-name').textContent = data.top3[1].name;
+                    document.getElementById('top-2-stat').textContent = `${data.top3[1].xp.toLocaleString()} XP`;
+                }
+                if(data.top3[2]) {
+                    document.getElementById('top-3-avatar').src = data.top3[2].avatar;
+                    document.getElementById('top-3-name').textContent = data.top3[2].name;
+                    document.getElementById('top-3-stat').textContent = `${data.top3[2].xp.toLocaleString()} XP`;
+                }
+
+                // Top 50
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+                
+                data.top50.forEach((user, idx) => {
+                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx + 1);
+                    tbody.innerHTML += `
+                        <tr class="border-t border-white/5 hover:bg-white/5 transition">
+                            <td class="px-6 py-4 font-black text-lg">${medal}</td>
+                            <td class="px-6 py-4 flex items-center gap-3">
+                                <img src="${user.avatar}" class="w-10 h-10 rounded-full border border-white/10">
+                                <div>
+                                    <p class="font-bold">${user.name}</p>
+                                    <p class="text-xs text-gray-500">${user.userId}</p>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-center text-sm text-gray-400">${user.serverName}</td>
+                            <td class="px-6 py-4 text-right font-black text-brand-primary">${user.xp.toLocaleString()}</td>
+                            <td class="px-6 py-4 text-right font-bold text-brand-accent">Lvl ${user.level}</td>
+                            <td class="px-6 py-4 text-right text-sm text-gray-400">${user.messages.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+
+                // Populate server filter
+                const servers = [...new Set(data.top50.map(u => u.serverName))];
+                const serverFilter = document.getElementById('server-filter');
+                servers.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    serverFilter.appendChild(opt);
+                });
+
+            } catch(e) {
+                console.error('Erreur leaderboard:', e);
+                document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-500">Erreur lors du chargement</td></tr>';
+            }
+        }
+
+        // Chargement au démarrage
+        loadLeaderboard();
+
+        // Rafraîchir toutes les 5 minutes
+        setInterval(loadLeaderboard, 300000);
+
+        // Mobile menu
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            // Implémente le menu mobile si nécessaire
+        });
+    </script>
+</body>
+</html>

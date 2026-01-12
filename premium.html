@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion | Tarification Infinity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], heading: ['"Outfit"', 'sans-serif'] }, colors: { brand: { bg: '#05060A', surface: '#0E1016', primary: '#F47FFF', accent: '#F47FFF' } } } } }
+    </script>
+    <style>
+        .glass-nav { background: rgba(5, 6, 10, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(244, 127, 255, 0.2); }
+        .tier-card { background: rgba(18, 20, 28, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 40px; transition: all 0.4s; overflow: hidden; }
+        .tier-card:hover { transform: translateY(-10px); border-color: #F47FFF; box-shadow: 0 0 50px rgba(244, 127, 255, 0.1); }
+        .badge-premium { background: linear-gradient(to right, #F47FFF, #5865F2); -webkit-background-clip: text; color: transparent; font-weight: 900; }
+        #mobile-menu.hidden { pointer-events: none; opacity: 0; transform: scale(0.95); }
+        #mobile-menu.flex { pointer-events: auto; opacity: 1; transform: scale(1); }
+    </style>
+</head>
+<body class="bg-brand-bg text-white font-sans antialiased overflow-x-hidden">
+
+    <nav class="fixed w-full z-50 top-0 glass-nav h-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3"><img id="bot-logo" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-10 h-10 rounded-[14px] shadow-xl border border-brand-primary/20"><span class="font-heading font-bold text-2xl tracking-tighter uppercase badge-premium">ORION</span></a>
+            
+            <div class="hidden md:flex items-center gap-1 bg-brand-primary/5 p-1 rounded-full border border-brand-primary/10">
+                <a href="index.html" class="px-6 py-2 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase">Accueil</a>
+                <a href="features.html" class="px-6 py-2 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase">Modules</a>
+                <a href="docs.html" class="px-6 py-2 rounded-full text-gray-500 hover:text-white transition-all text-[11px] font-black uppercase">Docs</a>
+                <a href="premium.html" class="px-6 py-2 rounded-full bg-brand-primary text-white text-[11px] font-black uppercase shadow-lg">Premium</a>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="/auth/discord" class="hidden md:block px-6 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-brand-primary transition-all text-[11px] font-black uppercase tracking-widest">Connexion</a>
+                <button id="mobile-menu-btn" class="md:hidden text-white p-2"><i class="fa-solid fa-bars text-2xl"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden fixed inset-0 z-[60] bg-brand-bg/95 backdrop-blur-xl flex-col items-center justify-center gap-8">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
+        <a href="index.html" class="text-3xl font-heading font-black uppercase tracking-widest">Accueil</a>
+        <a href="features.html" class="text-3xl font-heading font-black uppercase tracking-widest">Modules</a>
+        <a href="docs.html" class="text-3xl font-heading font-black uppercase tracking-widest">Docs</a>
+        <a href="premium.html" class="text-3xl font-heading font-black uppercase tracking-widest text-brand-primary">Premium</a>
+        <a href="/auth/discord" class="px-10 py-4 bg-brand-primary rounded-full font-black uppercase tracking-widest mt-4">Connexion</a>
+    </div>
+
+    <main class="relative z-10 pt-40 pb-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20">
+                <h1 class="font-heading text-5xl md:text-7xl font-black mb-6">Plans et <span class="text-brand-primary">tarification</span></h1>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto">Choisissez le plan qui correspond à vos besoins. Tous les plans incluent un support complet.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
+                
+                <!-- FREE TIER -->
+                <div class="tier-card p-12 flex flex-col">
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-black uppercase tracking-widest mb-3">Orion Free</h3>
+                        <div class="text-5xl font-black"><span class="text-4xl text-gray-400">0</span>€ <span class="text-sm font-normal text-gray-500">/mois</span></div>
+                    </div>
+
+                    <div class="mb-10 pb-10 border-b border-white/10">
+                        <p class="text-gray-400 text-sm">Parfait pour débuter</p>
+                    </div>
+
+                    <div class="space-y-3 mb-12 flex-grow">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Modération Complète</strong>
+                                <p class="text-gray-500 text-xs">Ban, kick, timeout, warn, clear</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Logs & Sécurité</strong>
+                                <p class="text-gray-500 text-xs">Suppression, édition, voix</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Salons Vocaux Dynamiques</strong>
+                                <p class="text-gray-500 text-xs">Création automatique en 1 clic</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Système de Niveaux</strong>
+                                <p class="text-gray-500 text-xs">XP textuel & vocal, récompenses</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Tickets & Support</strong>
+                                <p class="text-gray-500 text-xs">Système de tickets + Transcripts HTML</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Fun & Giveaways</strong>
+                                <p class="text-gray-500 text-xs">Sondages, 8ball, ship, trivia</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Utilitaires</strong>
+                                <p class="text-gray-500 text-xs">Embed builder, whois, help</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 pt-4 border-t border-white/5">
+                            <i class="fa-solid fa-circle-exclamation text-yellow-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-400">
+                                <strong>Limite: 1 Backup</strong>
+                                <p class="text-gray-500 text-xs">Augmentez avec Premium</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-exclamation text-yellow-500 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-400">
+                                <strong>Cooldown: 5-10 secondes</strong>
+                                <p class="text-gray-500 text-xs">Entre les commandes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-center font-black text-sm uppercase tracking-widest hover:bg-white/10 transition-all">Actuellement Actif</button>
+                </div>
+
+                <!-- PREMIUM TIER (Featured) -->
+                <div class="tier-card p-12 flex flex-col border-2 border-brand-primary bg-brand-primary/5 lg:scale-105 relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand-primary text-white text-[9px] font-black uppercase tracking-widest rounded-full">✨ Recommandé</div>
+                    
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-black uppercase tracking-widest text-brand-primary mb-3">Orion Premium</h3>
+                        <div class="text-5xl font-black"><span class="text-brand-primary">1.50</span>€ <span class="text-sm font-normal text-gray-500">/mois</span></div>
+                    </div>
+
+                    <div class="mb-10 pb-10 border-b border-brand-primary/20">
+                        <p class="text-brand-primary font-semibold text-sm">Tout du Free + Extras Premium</p>
+                    </div>
+
+                    <div class="space-y-3 mb-12 flex-grow">
+                        <div class="flex items-start gap-3 bg-brand-primary/10 p-3 rounded-lg">
+                            <i class="fa-solid fa-infinity text-brand-primary mt-1 text-sm"></i>
+                            <div class="text-sm text-brand-primary font-semibold">
+                                Backups Illimitées
+                                <p class="text-gray-400 text-xs font-normal">Au lieu de 1 seul</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-wand-magic-sparkles text-brand-primary mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>/massrole</strong>
+                                <p class="text-gray-500 text-xs">Attribution massive de rôles</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-image text-brand-primary mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Rank Cards Personnalisées</strong>
+                                <p class="text-gray-500 text-xs">Customise ta carte de profil</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-chart-line text-brand-primary mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Invite Logger Avancé</strong>
+                                <p class="text-gray-500 text-xs">Stats détaillées par membre</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-brand-primary/10 p-3 rounded-lg">
+                            <i class="fa-solid fa-bolt text-brand-primary mt-1 text-sm"></i>
+                            <div class="text-sm text-brand-primary font-semibold">
+                                Cooldown: 0 secondes
+                                <p class="text-gray-400 text-xs font-normal">Exécution instantanée</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://discord.gg/KcVx6eQM5W" target="_blank" class="w-full py-4 bg-brand-primary text-white rounded-xl text-center font-black text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-lg shadow-brand-primary/30">S'abonner Maintenant</a>
+                </div>
+
+                <!-- CUSTOM TIER -->
+                <div class="tier-card p-12 flex flex-col border-cyan-500/30">
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-black uppercase tracking-widest text-cyan-400 mb-3">Orion Custom</h3>
+                        <div class="text-5xl font-black"><span class="text-cyan-400">10€</span>+ <span class="text-sm font-normal text-gray-500">/mois</span></div>
+                    </div>
+
+                    <div class="mb-10 pb-10 border-b border-cyan-500/20">
+                        <p class="text-cyan-400 font-semibold text-sm">Tout du Premium + Solutions Custom</p>
+                    </div>
+
+                    <div class="space-y-3 mb-12 flex-grow">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-robot text-cyan-400 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Bot Personnalisé</strong>
+                                <p class="text-gray-500 text-xs">Nom, avatar, statut custom</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-plus text-cyan-400 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Commandes Spéciales</strong>
+                                <p class="text-gray-500 text-xs">Fonctionnalités exclusives</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-server text-cyan-400 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Instance Dédiée</strong>
+                                <p class="text-gray-500 text-xs">Serveur prioritaire exclusif</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-headset text-cyan-400 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>Support 24/7</strong>
+                                <p class="text-gray-500 text-xs">Assistance prioritaire VIP</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-shield-check text-cyan-400 mt-1 text-sm"></i>
+                            <div class="text-sm text-gray-300">
+                                <strong>SLA Garanti</strong>
+                                <p class="text-gray-500 text-xs">Uptime et performance garantis</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 border-t border-white/5 pt-4">
+                            <i class="fa-solid fa-infinity text-cyan-400 mt-1 text-sm"></i>
+                            <div class="text-sm text-cyan-300 font-semibold">
+                                Tout de Premium Inclus
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://discord.gg/KcVx6eQM5W" target="_blank" class="w-full py-4 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-xl text-center font-black text-sm uppercase tracking-widest hover:bg-cyan-500/20 transition-all">Nous Contacter</a>
+                </div>
+
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="mt-20 pt-20 border-t border-white/10">
+                <h2 class="text-3xl font-black mb-10 text-center">Comparaison détaillée</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="text-left py-4 px-4 font-black text-gray-400">Fonctionnalité</th>
+                                <th class="text-center py-4 px-4 font-black">Free</th>
+                                <th class="text-center py-4 px-4 font-black text-brand-primary">Premium</th>
+                                <th class="text-center py-4 px-4 font-black text-cyan-400">Custom</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4">Modération Complète</td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4">Niveaux & XP</td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4">Backups</td>
+                                <td class="text-center text-gray-400 text-xs">1 max</td>
+                                <td class="text-center font-black">Illimité</td>
+                                <td class="text-center font-black">Illimité</td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4">Rank Cards Personnalisées</td>
+                                <td class="text-center"><i class="fa-solid fa-xmark text-gray-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4">Cooldown Commandes</td>
+                                <td class="text-center text-gray-400 text-xs">5-10s</td>
+                                <td class="text-center font-black text-green-400">0s</td>
+                                <td class="text-center font-black text-green-400">0s</td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4">Support VIP</td>
+                                <td class="text-center"><i class="fa-solid fa-xmark text-gray-500"></i></td>
+                                <td class="text-center"><i class="fa-solid fa-check text-green-500"></i></td>
+                                <td class="text-center font-black text-cyan-400">24/7</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="mt-20 pt-20 border-t border-white/10 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-black mb-10 text-center">Questions Fréquentes</h2>
+                <div class="space-y-6">
+                    <details class="group cursor-pointer">
+                        <summary class="flex items-center justify-between py-4 px-6 bg-white/5 rounded-lg font-black text-sm uppercase tracking-widest">
+                            Puis-je changer de plan?
+                            <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-gray-400 text-sm py-4">Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements sont effectifs immédiatement.</p>
+                    </details>
+                    <details class="group cursor-pointer">
+                        <summary class="flex items-center justify-between py-4 px-6 bg-white/5 rounded-lg font-black text-sm uppercase tracking-widest">
+                            Y a-t-il une période d'essai?
+                            <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-gray-400 text-sm py-4">Le plan Free n'a aucune limite de durée. Testez toutes les fonctionnalités sans engagement!</p>
+                    </details>
+                    <details class="group cursor-pointer">
+                        <summary class="flex items-center justify-between py-4 px-6 bg-white/5 rounded-lg font-black text-sm uppercase tracking-widest">
+                            Quels sont les délais de paiement?
+                            <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-gray-400 text-sm py-4">Les abonnements Premium et Custom sont facturés mensuellement par anticipation via Discord.</p>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMenu() {
+            if (mobileMenu.classList.contains('hidden')) { mobileMenu.classList.remove('hidden'); mobileMenu.classList.add('flex'); }
+            else { mobileMenu.classList.add('hidden'); mobileMenu.classList.remove('flex'); }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        
+        async function fetchBot() {
+            const res = await fetch('/api/bot-info');
+            const data = await res.json();
+            if(data.avatar) document.getElementById('bot-logo').src = data.avatar;
+        }
+        fetchBot();
+    </script>
+</body>
+</html>
